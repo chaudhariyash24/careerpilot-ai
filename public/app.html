@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>CareerPilot AI — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <div id="notif"></div>
+
+  <div id="loading">
+    <div class="load-logo">CareerPilot AI</div>
+    <div class="load-bar"><div class="load-fill" id="load-fill"></div></div>
+    <div class="load-text">Loading Dashboard</div>
+  </div>
+
+  <div id="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">🚀</div>
+        <span>CareerPilot AI</span>
+      </div>
+      <div class="nav-section">Main</div>
+      <div class="nav-item active" onclick="navigate('dashboard')"><span class="nav-icon">⚡</span> Dashboard</div>
+      <div class="nav-section">Features</div>
+      <div class="nav-item" onclick="navigate('aptitude')"><span class="nav-icon">📝</span> Aptitude Test</div>
+      <div class="nav-item" onclick="navigate('projects')"><span class="nav-icon">💡</span> Projects</div>
+      <div class="nav-item" onclick="navigate('jobs')"><span class="nav-icon">💼</span> Jobs / Internships</div>
+      <div class="nav-item" onclick="navigate('courses')"><span class="nav-icon">📚</span> Courses</div>
+      <div class="nav-item" onclick="navigate('leaderboard')"><span class="nav-icon">🏆</span> Leaderboard</div>
+      <div class="nav-section">AI &amp; Tools</div>
+      <div class="nav-item" onclick="toggleChat()"><span class="nav-icon">🤖</span> NOVA AI Assistant</div>
+      <div class="nav-item" onclick="navigate('resume')"><span class="nav-icon">📄</span> Resume &amp; ATS</div>
+      <div class="nav-item" onclick="navigate('certificates')"><span class="nav-icon">🎓</span> Certificates</div>
+      <div class="nav-section">Account</div>
+      <div class="nav-item" onclick="navigate('profile')"><span class="nav-icon">👤</span> Profile</div>
+      <div class="nav-item" onclick="logout()"><span class="nav-icon">🚪</span> Logout</div>
+      <div class="sidebar-user">
+        <div class="user-mini">
+          <div class="avatar" id="sidebar-avatar">--</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-name">Loading...</div>
+            <div class="user-role" id="sidebar-role">--</div>
+          </div>
+          <div class="badge-gold badge" id="sidebar-score">--</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main" id="main">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:0.8rem">
+          <button id="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')" style="background:none;border:none;color:var(--text);font-size:1.2rem;cursor:pointer;display:none">☰</button>
+          <div style="font-family:'Syne',sans-serif;font-size:0.9rem;color:var(--text3)">Welcome, <span style="color:var(--gold2)" id="topbar-name">--</span> 👋</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.8rem">
+          <div class="badge badge-purple" id="topbar-score">🔥 --/100 Score</div>
+          <div class="badge badge-gold" id="topbar-role">🎓 Student</div>
+          <div class="avatar" onclick="navigate('profile')" style="width:32px;height:32px;font-size:0.75rem;cursor:pointer" id="topbar-avatar">--</div>
+        </div>
+      </div>
+
+      <!-- ===== DASHBOARD ===== -->
+      <div class="page active" id="page-dashboard">
+        <div style="margin-bottom:1.5rem">
+          <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:0.2rem">Career Dashboard</h1>
+          <p style="color:var(--text3);font-size:0.85rem">Your complete career intelligence overview</p>
+        </div>
+        <div class="grid-4" style="margin-bottom:1rem">
+          <div class="card gold-glow">
+            <div class="card-title">Career Score</div>
+            <div class="stat-val" id="dash-score" style="background:linear-gradient(135deg,var(--purple2),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">--</div>
+            <div class="stat-lbl">out of 100</div>
+            <div class="progress-wrap"><div class="progress-fill" id="dash-score-bar" style="width:0%"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Profile Completion</div>
+            <div class="stat-val" id="dash-profile">--%</div>
+            <div class="stat-lbl">Keep going!</div>
+            <div class="progress-wrap"><div class="progress-fill" id="dash-profile-bar" style="width:0%;background:linear-gradient(90deg,var(--gold),#ef4444)"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Test Percentile</div>
+            <div class="stat-val" id="dash-pct">--</div>
+            <div class="stat-lbl">Percentile rank</div>
+            <div class="progress-wrap"><div class="progress-fill" id="dash-pct-bar" style="width:0%;background:linear-gradient(90deg,#06b6d4,var(--purple2))"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Certs Uploaded</div>
+            <div class="stat-val" id="dash-certs">0</div>
+            <div class="stat-lbl">Certificates</div>
+            <div class="progress-wrap"><div class="progress-fill" id="dash-certs-bar" style="width:0%;background:linear-gradient(90deg,#a855f7,#ec4899)"></div></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:1rem">
+          <div class="card-title">🎯 Recommended Actions</div>
+          <div id="dash-actions" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent Activity</div>
+          <div id="activities"><div style="color:var(--text3);font-size:0.85rem;padding:1rem 0">Loading activities...</div></div>
+        </div>
+      </div>
+
+      <!-- ===== APTITUDE TEST ===== -->
+      <div class="page" id="page-aptitude">
+        <div id="test-start">
+          <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:0.5rem">Aptitude Test Module</h1>
+          <p style="color:var(--text3);font-size:0.85rem;margin-bottom:1.5rem">Timer-based MCQ · 3 Sections · 30 Minutes</p>
+          <div class="grid-3" style="margin-bottom:1.5rem">
+            <div class="card" style="text-align:center"><div style="font-size:2rem;margin-bottom:0.5rem">🔢</div><div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:0.3rem">Quantitative</div><div style="font-size:0.78rem;color:var(--text3)">5 Questions</div></div>
+            <div class="card" style="text-align:center"><div style="font-size:2rem;margin-bottom:0.5rem">🧩</div><div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:0.3rem">Logical</div><div style="font-size:0.78rem;color:var(--text3)">5 Questions</div></div>
+            <div class="card" style="text-align:center"><div style="font-size:2rem;margin-bottom:0.5rem">📖</div><div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:0.3rem">Verbal</div><div style="font-size:0.78rem;color:var(--text3)">5 Questions</div></div>
+          </div>
+          <div class="card" style="margin-bottom:1rem;max-width:500px">
+            <div class="card-title">Instructions</div>
+            <ul style="font-size:0.83rem;color:var(--text2);padding-left:1.2rem;line-height:2">
+              <li>30 minute timer — auto-submits on expiry</li>
+              <li>15 MCQ questions across 3 sections</li>
+              <li>No negative marking</li>
+              <li>Results shown instantly after submission</li>
+            </ul>
+          </div>
+          <button class="btn btn-gold" onclick="startTest()" style="font-size:0.95rem;padding:0.7rem 2rem">🚀 Start Test</button>
+        </div>
+        <div id="test-active" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.5rem">
+            <div>
+              <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.2rem">Question <span id="q-num">1</span> of 15</div>
+              <div class="progress-wrap" style="width:200px"><div class="progress-fill" id="test-progress" style="width:7%"></div></div>
+            </div>
+            <div style="text-align:center">
+              <div class="timer-ring" id="timer-display">29:59</div>
+              <div style="font-size:0.7rem;color:var(--text3)">TIME REMAINING</div>
+            </div>
+            <div><span class="badge badge-purple" id="test-section">Quantitative</span></div>
+          </div>
+          <div id="q-container"></div>
+          <div style="display:flex;gap:1rem;margin-top:1rem">
+            <button class="btn btn-outline" disabled id="btn-prev" onclick="prevQ()">← Previous</button>
+            <button class="btn btn-primary" id="btn-next" onclick="nextQ()">Next →</button>
+            <button class="btn btn-gold" id="btn-submit" onclick="submitTest()" style="display:none">Submit Test</button>
+          </div>
+        </div>
+        <div id="test-results" style="display:none">
+          <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;margin-bottom:1.5rem">📊 Test Results</h2>
+          <div class="grid-3" style="margin-bottom:1.5rem">
+            <div class="card gold-glow" style="text-align:center"><div class="card-title">Score</div><div class="stat-val" id="res-score" style="background:linear-gradient(135deg,var(--purple2),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">--</div><div class="stat-lbl">out of 15</div></div>
+            <div class="card" style="text-align:center"><div class="card-title">Percentile</div><div class="stat-val" id="res-pct">--</div><div class="stat-lbl">Percentile</div></div>
+            <div class="card" style="text-align:center"><div class="card-title">Time Taken</div><div class="stat-val" id="res-time">--</div><div class="stat-lbl">Minutes</div></div>
+          </div>
+          <div class="card" style="margin-bottom:1rem"><div class="card-title">Performance Breakdown</div><div id="perf-breakdown"></div></div>
+          <button class="btn btn-outline" onclick="resetTest()">🔄 Retake Test</button>
+        </div>
+      </div>
+
+      <!-- ===== JOBS ===== -->
+      <div class="page" id="page-jobs">
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:0.5rem">Jobs &amp; Internships</h1>
+        <p style="color:var(--text3);font-size:0.85rem;margin-bottom:1.2rem" id="jobs-subtitle">AI-matched opportunities based on your career score</p>
+        <div style="display:flex;gap:0.7rem;margin-bottom:1.2rem;flex-wrap:wrap">
+          <select id="filter-type" onchange="loadJobs()" style="width:auto;padding:0.45rem 0.8rem"><option>All Types</option><option>Full-Time</option><option>Internship</option></select>
+          <select id="filter-location" onchange="loadJobs()" style="width:auto;padding:0.45rem 0.8rem"><option>All Locations</option><option>Bangalore</option><option>Hyderabad</option><option>Remote</option><option>Mumbai</option><option>Pune</option><option>Chennai</option></select>
+        </div>
+        <div id="jobs-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem"></div>
+      </div>
+
+      <!-- ===== COURSES ===== -->
+      <div class="page" id="page-courses">
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:0.5rem">Courses &amp; Roadmap</h1>
+        <div style="padding:0.8rem 1rem;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:10px;margin-bottom:1.2rem;font-size:0.85rem" id="courses-hint">🤖 <strong style="color:var(--gold2)">AI Recommendation:</strong> Courses are sorted by relevance to your skill gaps.</div>
+        <div id="courses-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem"></div>
+      </div>
+
+      <!-- ===== LEADERBOARD ===== -->
+      <div class="page" id="page-leaderboard">
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:0.5rem">🏆 Leaderboard</h1>
+        <p style="color:var(--text3);font-size:0.85rem;margin-bottom:1.2rem">Ranked by Career Score</p>
+        <div class="card" style="max-width:700px"><div id="lb-list"><div style="color:var(--text3);padding:1rem">Loading...</div></div></div>
+      </div>
+
+      <!-- ===== RESUME ATS ===== -->
+      <div class="page" id="page-resume">
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:0.5rem">Resume &amp; ATS Scanner</h1>
+        <p style="color:var(--text3);font-size:0.85rem;margin-bottom:1.5rem">Upload your resume to get a real-time ATS score with AI-powered feedback</p>
+        <div class="grid-2">
+          <div>
+            <form id="resume-form" enctype="multipart/form-data">
+              <div class="upload-zone" id="resume-zone" onclick="document.getElementById('resume-file').click()">
+                <div class="upload-icon">📄</div>
+                <div style="font-size:0.9rem;font-weight:500;margin-bottom:0.3rem">Drop Resume Here</div>
+                <div style="font-size:0.8rem;color:var(--text3)">PDF supported</div>
+                <button type="button" class="btn btn-outline" style="margin-top:0.8rem;font-size:0.8rem">Browse Files</button>
+              </div>
+              <input type="file" id="resume-file" accept=".pdf" style="display:none" onchange="uploadResume()"/>
+            </form>
+          </div>
+          <div id="ats-results" style="display:none">
+            <div class="card gold-glow" style="margin-bottom:1rem">
+              <div class="card-title">ATS Score</div>
+              <div style="display:flex;align-items:center;gap:1rem">
+                <div class="stat-val" id="ats-score" style="font-size:2.5rem;background:linear-gradient(135deg,var(--purple2),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">--</div>
+                <div style="flex:1">
+                  <div style="font-size:0.8rem;color:var(--text2);margin-bottom:0.4rem">Resume Strength</div>
+                  <div class="ats-bar"><div class="ats-fill" id="ats-bar-fill" style="width:0%;background:linear-gradient(90deg,var(--purple),var(--gold))"></div></div>
+                  <div style="font-size:0.75rem;color:var(--gold2);margin-top:0.3rem" id="ats-summary"></div>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="margin-bottom:1rem"><div class="card-title">Keywords</div><div id="missing-kw"></div></div>
+            <div class="card"><div class="card-title">Improvements</div><ul id="ats-improvements" style="font-size:0.82rem;color:var(--text2);padding-left:1.2rem;line-height:2"></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CERTIFICATES ===== -->
+      <div class="page" id="page-certificates">
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:0.5rem">Certificate Upload</h1>
+        <p style="color:var(--text3);font-size:0.85rem;margin-bottom:1.5rem">Upload certificates for AI skill extraction and career score boost</p>
+        <div class="grid-2">
+          <div>
+            <div class="card" style="margin-bottom:1rem">
+              <div class="card-title">Upload New Certificate</div>
+              <form id="cert-upload-form">
+                <div class="cert-form">
+                  <div><label>Certificate Name *</label><input type="text" id="cert-name" placeholder="e.g. AWS Cloud Practitioner" required/></div>
+                  <div><label>Issuer</label><input type="text" id="cert-issuer" placeholder="e.g. Amazon Web Services"/></div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
+                    <div><label>Marks/Grade</label><input type="text" id="cert-marks" placeholder="e.g. 92%"/></div>
+                    <div><label>Date</label><input type="text" id="cert-date" placeholder="e.g. Jan 2025"/></div>
+                  </div>
+                  <div><label>Certificate File (optional)</label><input type="file" id="cert-file" accept=".pdf,.jpg,.jpeg,.png"/></div>
+                  <button type="button" class="btn btn-primary" onclick="uploadCert()" style="width:100%;margin-top:0.5rem">🎓 Upload &amp; Extract Skills</button>
+                </div>
+              </form>
+            </div>
+            <div id="cert-list"></div>
+          </div>
+          <div id="cert-preview" style="display:none">
+            <div class="card gold-glow"><div class="card-title">AI Extracted Data</div><div id="cert-data"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PROFILE ===== -->
+      <div class="page" id="page-profile">
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:1.5rem">My Profile</h1>
+        <div class="grid-2">
+          <div>
+            <div class="card" style="margin-bottom:1rem;text-align:center">
+              <div class="avatar" style="width:70px;height:70px;font-size:1.5rem;margin:0 auto 0.8rem" id="profile-avatar">--</div>
+              <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:600" id="profile-name">--</div>
+              <div style="font-size:0.82rem;color:var(--text3);margin-bottom:0.8rem" id="profile-email">--</div>
+              <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap" id="profile-badges"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Edit Profile</div>
+              <div style="display:grid;gap:0.7rem">
+                <div><label style="font-size:0.75rem;color:var(--text3)">Full Name</label><input id="edit-name" style="margin-top:4px"/></div>
+                <div><label style="font-size:0.75rem;color:var(--text3)">Branch</label><input id="edit-branch" style="margin-top:4px"/></div>
+                <div><label style="font-size:0.75rem;color:var(--text3)">Year</label><input id="edit-year" style="margin-top:4px"/></div>
+                <div><label style="font-size:0.75rem;color:var(--text3)">CGPA</label><input id="edit-cgpa" style="margin-top:4px"/></div>
+                <div><label style="font-size:0.75rem;color:var(--text3)">Skills (comma separated)</label><input id="edit-skills" style="margin-top:4px" placeholder="Python, React, Node.js"/></div>
+                <button class="btn btn-primary" onclick="saveProfile()" style="margin-top:0.5rem">Save Changes</button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:1rem">
+              <div class="card-title">Progress Tracking</div>
+              <div style="margin-bottom:0.8rem"><div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px"><span>Profile Completion</span><span style="color:var(--gold2)" id="prof-completion">--%</span></div><div class="progress-wrap"><div class="progress-fill" id="prof-comp-bar" style="width:0%"></div></div></div>
+              <div style="margin-bottom:0.8rem"><div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px"><span>Career Score</span><span style="color:var(--purple3)" id="prof-score">--/100</span></div><div class="progress-wrap"><div class="progress-fill" id="prof-score-bar" style="width:0%"></div></div></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Skills</div>
+              <div style="display:flex;flex-wrap:wrap;gap:0.4rem" id="profile-skills"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PROJECTS ===== -->
+      <div class="page" id="page-projects">
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:1rem">My Projects</h1>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem" id="projects-grid">
+          <div class="card purple-glow"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem"><div class="badge badge-green">Completed</div><div style="font-size:0.75rem;color:var(--text3)">Jan 2025</div></div><div style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:600;margin-bottom:0.3rem">AI Career Advisor</div><div style="font-size:0.8rem;color:var(--text2);margin-bottom:0.7rem">Built a career guidance app using OpenAI API and React</div><div style="display:flex;flex-wrap:wrap;gap:0.3rem"><span class="badge badge-purple">React</span><span class="badge badge-purple">OpenAI</span><span class="badge badge-gold">Node.js</span></div></div>
+          <div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem"><div class="badge badge-gold">In Progress</div><div style="font-size:0.75rem;color:var(--text3)">Mar 2025</div></div><div style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:600;margin-bottom:0.3rem">Resume ATS Analyzer</div><div style="font-size:0.8rem;color:var(--text2);margin-bottom:0.7rem">NLP-based resume scoring system with keyword extraction</div><div style="display:flex;flex-wrap:wrap;gap:0.3rem"><span class="badge badge-purple">Python</span><span class="badge badge-gold">NLP</span><span class="badge badge-green">Flask</span></div></div>
+          <div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem"><div class="badge badge-purple">Planning</div><div style="font-size:0.75rem;color:var(--text3)">Apr 2025</div></div><div style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:600;margin-bottom:0.3rem">Smart Study Planner</div><div style="font-size:0.8rem;color:var(--text2);margin-bottom:0.7rem">AI-powered study schedule generator based on exam syllabus</div><div style="display:flex;flex-wrap:wrap;gap:0.3rem"><span class="badge badge-purple">ML</span><span class="badge badge-gold">React</span></div></div>
+        </div>
+      </div>
+
+    </div><!-- end main -->
+  </div><!-- end app -->
+
+  <!-- CHAT BUBBLE -->
+  <div id="chat-bubble">
+    <button class="chat-toggle" onclick="toggleChat()">🤖</button>
+    <div class="chat-window" id="chat-win">
+      <div class="chat-header">
+        <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--purple),var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🤖</div>
+        <div>
+          <div class="chat-header-name">NOVA AI</div>
+          <div style="font-size:0.7rem;color:var(--text3);display:flex;align-items:center;gap:4px"><div class="chat-dot"></div> Online</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-msgs"></div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-in" onkeydown="if(event.key==='Enter')sendChatMsg()" placeholder="Ask NOVA anything..."/>
+        <button class="chat-send" onclick="sendChatMsg()">↑</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>CareerPilot AI — Smart Career Decisions Powered by AI</title>
+  <meta name="description" content="AI-powered career intelligence platform. Get your career score, ATS resume analysis, job matching, aptitude tests, and personalized AI career guidance."/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0a0a0f;--bg2:#0f0f1a;--bg3:#13131f;--card:#16162a;--card2:#1c1c32;
+      --purple:#7c3aed;--purple2:#9f67ff;--purple3:#c084fc;
+      --gold:#f59e0b;--gold2:#fbbf24;--gold3:#fde68a;
+      --text:#f1f0ff;--text2:#a89fc0;--text3:#6b6080;
+      --border:rgba(124,58,237,0.18);--border2:rgba(245,158,11,0.2);
+      --glow:0 0 30px rgba(124,58,237,0.25);--glow2:0 0 20px rgba(245,158,11,0.2);
+    }
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;min-height:100vh}
+    h1,h2,h3,h4{font-family:'Syne',sans-serif}
+
+    /* Loading */
+    #loading{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.8s}
+    .load-logo{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,var(--purple2),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:1rem}
+    .load-bar{width:200px;height:2px;background:rgba(124,58,237,0.2);border-radius:2px;overflow:hidden;margin-bottom:0.5rem}
+    .load-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--gold));border-radius:2px;transition:width 0.05s}
+    .load-text{font-size:0.8rem;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
+    .particle{position:absolute;border-radius:50%;pointer-events:none;animation:float linear infinite}
+    @keyframes float{0%{transform:translateY(100vh) rotate(0deg);opacity:1}100%{transform:translateY(-100px) rotate(720deg);opacity:0}}
+
+    /* Hero */
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:2rem}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(124,58,237,0.08) 0%,transparent 70%)}
+    .hero-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.15;animation:drift 8s ease-in-out infinite alternate}
+    @keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.1)}}
+    .hero-title{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,4rem);font-weight:800;line-height:1.1;margin-bottom:1rem;background:linear-gradient(135deg,#fff 30%,var(--purple3) 60%,var(--gold2) 90%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero-sub{font-size:1.05rem;color:var(--text2);max-width:500px;margin:0 auto 2rem;line-height:1.7}
+    .hero-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:0.72rem;font-weight:500}
+    .badge-purple{background:rgba(124,58,237,0.12);color:var(--purple3);border:1px solid rgba(124,58,237,0.25)}
+    .badge-gold{background:rgba(245,158,11,0.12);color:var(--gold2);border:1px solid rgba(245,158,11,0.25)}
+
+    /* Buttons */
+    .btn{padding:0.55rem 1.2rem;border-radius:8px;font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.2s;border:none;font-family:'DM Sans',sans-serif}
+    .btn-gold{background:linear-gradient(135deg,var(--gold),#d97706);color:#000;font-weight:600}
+    .btn-gold:hover{transform:translateY(-1px);box-shadow:0 0 25px rgba(245,158,11,0.4)}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2)}
+    .btn-outline:hover{border-color:var(--purple2);color:var(--text)}
+    .btn-primary{background:linear-gradient(135deg,var(--purple),#5b21b6);color:#fff;box-shadow:0 0 20px rgba(124,58,237,0.3)}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(124,58,237,0.5)}
+
+    /* Feature Strip */
+    .feature-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;padding:3rem 1.5rem;max-width:900px;margin:0 auto}
+    .feat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;transition:all 0.3s;cursor:default}
+    .feat-card:hover{border-color:var(--purple2);transform:translateY(-3px);box-shadow:var(--glow)}
+    .feat-icon{font-size:1.8rem;margin-bottom:0.6rem}
+    .feat-title{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:600;margin-bottom:0.3rem}
+    .feat-desc{font-size:0.8rem;color:var(--text2);line-height:1.5}
+
+    /* Cards */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem}
+
+    /* Auth Modal */
+    .auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);z-index:5000;display:none;align-items:center;justify-content:center}
+    .auth-overlay.open{display:flex}
+    .auth-modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;width:400px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.5),var(--glow);position:relative;animation:modalIn 0.3s ease}
+    @keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(0.95)}to{opacity:1;transform:none}}
+    .auth-modal h2{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:0.3rem;background:linear-gradient(135deg,var(--purple2),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .auth-modal p{font-size:0.82rem;color:var(--text3);margin-bottom:1.5rem}
+    .auth-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text3);font-size:1.2rem;cursor:pointer}
+    .auth-close:hover{color:var(--text)}
+    .form-group{margin-bottom:1rem}
+    .form-group label{display:block;font-size:0.78rem;color:var(--text2);margin-bottom:0.3rem;font-weight:500}
+    .form-group input,.form-group select{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:0.6rem 0.9rem;font-size:0.85rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s}
+    .form-group input:focus,.form-group select:focus{border-color:var(--purple2);box-shadow:0 0 0 3px rgba(124,58,237,0.12)}
+    .form-group select option{background:var(--card)}
+    .auth-error{color:#f87171;font-size:0.78rem;margin-bottom:0.8rem;display:none;padding:0.5rem;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);border-radius:6px}
+    .auth-tabs{display:flex;gap:0;margin-bottom:1.5rem;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+    .auth-tab{flex:1;padding:0.5rem;text-align:center;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.2s;background:transparent;border:none;color:var(--text3)}
+    .auth-tab.active{background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(245,158,11,0.15));color:var(--gold2)}
+    .auth-tab:hover:not(.active){background:rgba(124,58,237,0.1)}
+    .auth-form{display:none}
+    .auth-form.active{display:block}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
+    .auth-submit{width:100%;padding:0.7rem;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;font-family:'Syne',sans-serif;margin-top:0.5rem}
+    .auth-submit.login-btn{background:linear-gradient(135deg,var(--purple),#5b21b6);color:#fff;box-shadow:0 0 20px rgba(124,58,237,0.3)}
+    .auth-submit.register-btn{background:linear-gradient(135deg,var(--gold),#d97706);color:#000}
+    .auth-submit:hover{transform:translateY(-1px)}
+    .auth-submit:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+
+    /* Scrollbar */
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:rgba(124,58,237,0.3);border-radius:2px}
+  </style>
+</head>
+<body>
+  <!-- LOADING SCREEN -->
+  <div id="loading">
+    <div class="load-logo">CareerPilot AI</div>
+    <div class="load-bar"><div class="load-fill" id="load-fill"></div></div>
+    <div class="load-text">Initializing AI Systems</div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="landing" style="display:none">
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-orb" style="width:400px;height:400px;background:var(--purple);top:-100px;right:-100px;animation-delay:0s"></div>
+      <div class="hero-orb" style="width:300px;height:300px;background:var(--gold);bottom:-50px;left:-80px;animation-delay:3s"></div>
+      <div style="position:relative;z-index:2">
+        <div class="badge badge-purple" style="margin-bottom:1.5rem;font-size:0.78rem">✨ AI-Powered Career Intelligence</div>
+        <h1 class="hero-title">Smart Career Decisions<br/>Powered by AI</h1>
+        <p class="hero-sub">Analyze your skills, get real-time insights, and unlock your perfect career path with advanced AI-driven guidance.</p>
+        <div class="hero-btns">
+          <button class="btn btn-gold" onclick="openAuth('register')" id="hero-get-started">🚀 Get Started</button>
+          <button class="btn btn-outline" onclick="openAuth('login')" id="hero-login">✦ Login</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="feature-strip">
+      <div class="feat-card"><div class="feat-icon">🧠</div><div class="feat-title">AI Career Scoring</div><div class="feat-desc">Get a comprehensive career score based on your skills, certificates, and performance.</div></div>
+      <div class="feat-card"><div class="feat-icon">📊</div><div class="feat-title">ATS Resume Scanner</div><div class="feat-desc">Real-time ATS score with missing keywords and improvement tips.</div></div>
+      <div class="feat-card"><div class="feat-icon">🎯</div><div class="feat-title">Smart Job Matching</div><div class="feat-desc">AI matches you with jobs and internships based on your actual career score.</div></div>
+      <div class="feat-card"><div class="feat-icon">⏱</div><div class="feat-title">Aptitude Tests</div><div class="feat-desc">Timed MCQ tests with instant analysis and percentile ranking.</div></div>
+      <div class="feat-card"><div class="feat-icon">🏆</div><div class="feat-title">Leaderboard</div><div class="feat-desc">Compete with peers and climb the rankings based on career score.</div></div>
+      <div class="feat-card"><div class="feat-icon">🤖</div><div class="feat-title">NOVA AI Assistant</div><div class="feat-desc">Personal AI advisor guiding you through career decisions step by step.</div></div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div style="padding:2rem 1.5rem;max-width:800px;margin:0 auto">
+      <h2 style="font-family:'Syne',sans-serif;font-size:1.5rem;text-align:center;margin-bottom:2rem;background:linear-gradient(135deg,var(--purple3),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">How It Works</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;text-align:center">
+        <div><div style="width:50px;height:50px;background:linear-gradient(135deg,var(--purple),var(--gold));border-radius:50%;margin:0 auto 0.7rem;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700">1</div><div style="font-size:0.85rem;color:var(--text2)">Create Your Account</div></div>
+        <div><div style="width:50px;height:50px;background:linear-gradient(135deg,var(--gold),var(--purple));border-radius:50%;margin:0 auto 0.7rem;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700">2</div><div style="font-size:0.85rem;color:var(--text2)">Upload Certificates &amp; Resume</div></div>
+        <div><div style="width:50px;height:50px;background:linear-gradient(135deg,var(--purple),var(--gold));border-radius:50%;margin:0 auto 0.7rem;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700">3</div><div style="font-size:0.85rem;color:var(--text2)">AI Analyzes Your Profile</div></div>
+        <div><div style="width:50px;height:50px;background:linear-gradient(135deg,var(--gold),var(--purple));border-radius:50%;margin:0 auto 0.7rem;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700">4</div><div style="font-size:0.85rem;color:var(--text2)">Get Smart Recommendations</div></div>
+      </div>
+    </div>
+
+    <!-- TESTIMONIALS -->
+    <div style="padding:2rem 1.5rem;text-align:center;max-width:800px;margin:0 auto">
+      <h2 style="font-family:'Syne',sans-serif;font-size:1.3rem;margin-bottom:1.5rem">What Students Say</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
+        <div class="card"><div style="color:var(--gold2);font-size:1rem;margin-bottom:0.6rem">★★★★★</div><div style="font-size:0.83rem;color:var(--text2);line-height:1.5;margin-bottom:0.6rem">"CareerPilot helped me land my first internship at a top MNC. The ATS scanner was a game changer!"</div><div style="font-size:0.75rem;color:var(--text3)">— Priya S., CSE Graduate</div></div>
+        <div class="card"><div style="color:var(--gold2);font-size:1rem;margin-bottom:0.6rem">★★★★★</div><div style="font-size:0.83rem;color:var(--text2);line-height:1.5;margin-bottom:0.6rem">"The AI assistant NOVA gave me a complete roadmap. I knew exactly what to learn next."</div><div style="font-size:0.75rem;color:var(--text3)">— Rahul M., IT Student</div></div>
+        <div class="card"><div style="color:var(--gold2);font-size:1rem;margin-bottom:0.6rem">★★★★☆</div><div style="font-size:0.83rem;color:var(--text2);line-height:1.5;margin-bottom:0.6rem">"The aptitude test module prepared me for campus placements. Highly recommended!"</div><div style="font-size:0.75rem;color:var(--text3)">— Sneha K., Final Year</div></div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="text-align:center;padding:2rem;border-top:1px solid var(--border);margin-top:2rem">
+      <div style="font-family:'Syne',sans-serif;font-size:1rem;background:linear-gradient(135deg,var(--purple2),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:0.4rem">CareerPilot AI</div>
+      <div style="font-size:0.75rem;color:var(--text3)">Smart Career Decisions Powered by AI · © 2025</div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div class="auth-overlay" id="auth-overlay">
+    <div class="auth-modal">
+      <button class="auth-close" onclick="closeAuth()" id="auth-close-btn">✕</button>
+      <h2>Welcome to CareerPilot AI</h2>
+      <p>Your AI-powered career intelligence platform</p>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')" id="tab-login">Login</button>
+        <button class="auth-tab" onclick="switchTab('register')" id="tab-register">Register</button>
+      </div>
+
+      <div class="auth-error" id="auth-error"></div>
+
+      <!-- LOGIN FORM -->
+      <form class="auth-form active" id="form-login" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="your@email.com" required autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password"/>
+        </div>
+        <button type="submit" class="auth-submit login-btn" id="login-submit">⚡ Login</button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form class="auth-form" id="form-register" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="reg-name" placeholder="Arjun Kumar" required/>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="your@email.com" required autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="Min 6 characters" required minlength="6"/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Branch</label>
+            <select id="reg-branch">
+              <option value="">Select</option>
+              <option>CSE</option>
+              <option>IT</option>
+              <option>AI/ML</option>
+              <option>ECE</option>
+              <option>EEE</option>
+              <option>Mechanical</option>
+              <option>Civil</option>
+              <option>BCA</option>
+              <option>MCA</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Year</label>
+            <select id="reg-year">
+              <option value="">Select</option>
+              <option>1st Year</option>
+              <option>2nd Year</option>
+              <option>3rd Year</option>
+              <option>Final Year</option>
+              <option>Graduate</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="auth-submit register-btn" id="register-submit">🚀 Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Check if already logged in
+    const token = localStorage.getItem('cp_token');
+    if (token) {
+      window.location.href = '/app';
+    }
+
+    // Loading animation
+    let progress = 0;
+    const fill = document.getElementById('load-fill');
+    const loadInt = setInterval(() => {
+      progress += Math.random() * 20;
+      if (progress >= 100) {
+        progress = 100;
+        fill.style.width = '100%';
+        clearInterval(loadInt);
+        setTimeout(() => {
+          document.getElementById('loading').style.opacity = '0';
+          setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('landing').style.display = 'block';
+          }, 800);
+        }, 300);
+      }
+      fill.style.width = progress + '%';
+    }, 80);
+
+    // Particles
+    for (let i = 0; i < 15; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.cssText = `width:${Math.random()*6+2}px;height:${Math.random()*6+2}px;background:${Math.random()>0.5?'#7c3aed':'#f59e0b'};left:${Math.random()*100}%;animation-duration:${Math.random()*3+2}s;animation-delay:${Math.random()*2}s`;
+      document.getElementById('loading').appendChild(p);
+    }
+
+    // Auth modal
+    function openAuth(tab = 'login') {
+      document.getElementById('auth-overlay').classList.add('open');
+      switchTab(tab);
+    }
+    function closeAuth() {
+      document.getElementById('auth-overlay').classList.remove('open');
+      document.getElementById('auth-error').style.display = 'none';
+    }
+    function switchTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('form-' + tab).classList.add('active');
+      document.getElementById('auth-error').style.display = 'none';
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('auth-error');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('login-submit');
+      btn.disabled = true;
+      btn.textContent = '⏳ Logging in...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('login-email').value,
+            password: document.getElementById('login-password').value
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Login failed');
+
+        localStorage.setItem('cp_token', data.token);
+        localStorage.setItem('cp_user', JSON.stringify(data.user));
+        window.location.href = '/app';
+      } catch (err) {
+        showError(err.message);
+        btn.disabled = false;
+        btn.textContent = '⚡ Login';
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const btn = document.getElementById('register-submit');
+      btn.disabled = true;
+      btn.textContent = '⏳ Creating account...';
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: document.getElementById('reg-name').value,
+            email: document.getElementById('reg-email').value,
+            password: document.getElementById('reg-password').value,
+            branch: document.getElementById('reg-branch').value,
+            year: document.getElementById('reg-year').value
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+        localStorage.setItem('cp_token', data.token);
+        localStorage.setItem('cp_user', JSON.stringify(data.user));
+        window.location.href = '/app';
+      } catch (err) {
+        showError(err.message);
+        btn.disabled = false;
+        btn.textContent = '🚀 Create Account';
+      }
+    }
+
+    // Close modal on overlay click
+    document.getElementById('auth-overlay').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeAuth();
+    });
+  </script>
+</body>
+</html>
